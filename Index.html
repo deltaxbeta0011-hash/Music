@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial;
+}
+
+body{
+  background:#0d0d0d;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  transition:0.5s;
+}
+
+.form-container{
+  background:rgba(255,255,255,0.1);
+  padding:40px;
+  border-radius:15px;
+  box-shadow:0 0 20px #00ffff80;
+  width:320px;
+  text-align:center;
+}
+
+h2{color:#fff;margin-bottom:20px;}
+
+.input-box{margin:20px 0;}
+
+.input-box input{
+  width:100%;
+  padding:12px;
+  background:none;
+  border:none;
+  outline:none;
+  color:#fff;
+  border-bottom:2px solid #aaa;
+}
+
+.input-box span{
+  color:#00ffff;
+  font-size:12px;
+}
+
+.submit-btn{
+  background:linear-gradient(90deg,#00ffff,#00ff80);
+  border:none;
+  padding:12px 30px;
+  border-radius:25px;
+  cursor:pointer;
+}
+
+/* HALAMAN UTAMA */
+#halaman-utama{
+  display:none;
+  position:fixed;
+  width:100%;
+  height:100vh;
+  background:linear-gradient(135deg,#000428,#004e92);
+  color:white;
+}
+
+#halaman-utama.aktif{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+#judul-lagu{
+  margin-bottom:10px;
+  font-size:22px;
+  color:yellow;
+  font-weight:bold;
+}
+
+.music-controls{
+  display:flex;
+  gap:15px;
+  margin-top:15px;
+}
+
+.music-controls button{
+  padding:15px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  background:#00ffff;
+  font-size:18px;
+}
+
+.logout-btn{
+  margin-top:15px;
+  padding:10px 20px;
+  border-radius:20px;
+  border:none;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<form onsubmit="login(event)">
+  <div class="form-container">
+    <h2>Login</h2>
+
+    <div class="input-box">
+      <input type="text" id="username" required>
+      <span>username</span>
+    </div>
+
+    <div class="input-box">
+      <input type="password" id="password" required>
+      <span>password</span>
+    </div>
+
+    <button type="submit" class="submit-btn">Login</button>
+  </div>
+</form>
+
+<!-- HALAMAN UTAMA -->
+<div id="halaman-utama">
+  <h1>Halaman Utama</h1>
+
+  <div id="judul-lagu">Memuat lagu...</div>
+  <audio id="musik" controls></audio>
+
+  <div class="music-controls">
+    <button onclick="prevLagu()">⏮️</button>
+    <button onclick="playLagu()">▶️</button>
+    <button onclick="nextLagu()">⏭️</button>
+  </div>
+
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+<script>
+// 🔥 DATA USER (TINGGAL TAMBAH DI SINI)
+let users = [
+  { username: "admin", password: "123" },
+  { username: "member1", password: "80345031" }
+];
+
+// LOGIN
+function login(e){
+  e.preventDefault();
+
+  let userInput = document.getElementById("username").value;
+  let passInput = document.getElementById("password").value;
+
+  let valid = users.some(u => 
+    u.username === userInput && u.password === passInput
+  );
+
+  if(valid){
+    halamanUtama.classList.add("aktif");
+    document.querySelector("form").style.display="none";
+    document.body.style.background="white";
+    audio.play();
+  }else{
+    alert("username atau password salah");
+  }
+}
+
+function logout(){
+  halamanUtama.classList.remove("aktif");
+  document.querySelector("form").style.display="block";
+  document.body.style.background="#0d0d0d";
+
+  audio.pause();
+  audio.currentTime=0;
+}
+
+// 🎵 PLAYLIST
+let daftarLagu = [
+  { file:"Lagu2.mp3", judul:"Lagu 2 🎵" },
+  { file:"Lagu3.mp3", judul:"Lagu 3 🎶" },
+  { file:"Lagu4.mp3", judul:"Lagu 4 🔥" },
+  { file:"Lagu1.mp3", judul:"Lagu 1 🌙" }
+];
+
+let indexLagu = 0;
+let audio = document.getElementById("musik");
+let judul = document.getElementById("judul-lagu");
+let halamanUtama = document.getElementById("halaman-utama");
+
+function loadLagu(){
+  let lagu = daftarLagu[indexLagu];
+  audio.src = lagu.file;
+  judul.innerText = lagu.judul;
+}
+
+loadLagu();
+
+function playLagu(){
+  audio.play();
+}
+
+function nextLagu(){
+  indexLagu = (indexLagu + 1) % daftarLagu.length;
+  loadLagu();
+  audio.play();
+}
+
+function prevLagu(){
+  indexLagu = (indexLagu - 1 + daftarLagu.length) % daftarLagu.length;
+  loadLagu();
+  audio.play();
+}
+
+audio.addEventListener("ended", nextLagu);
+</script>
+
+</body>
+</html>
